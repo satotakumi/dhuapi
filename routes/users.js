@@ -13,6 +13,16 @@ module.exports = {
 
         client.fetch('https://dh.force.com/digitalCampus/campuslogin')
         .then(function (result) {
+          var data = {};
+          if (!getData['id']){
+            data = {'result':'ng','reason':'id is empty'}
+            res.send(data);
+            return;
+          }else if (!getData['pass']){
+            data = {'result':'ng','reason':'password is empty'}
+            res.send(data);
+            return;
+          }
           var ViewState = result.$('input[name="com.salesforce.visualforce.ViewState"]').val();
           var ViewStateVersion = result.$('input[name="com.salesforce.visualforce.ViewStateVersion"]').val();
           var ViewStateMAC = result.$('input[name="com.salesforce.visualforce.ViewStateMAC"]').val();
@@ -25,9 +35,15 @@ module.exports = {
           });
         })
         .then(function (result) {
-          var sid = decodeURI(result['body'].toString().substring(result['body'].search("sid=")+4,result['body'].search("untethered=")-1));
-          console.log(sid);
-          var data = {'result':'ok','sid':sid}
+          var data = {}
+          console.log(result.$('.messageText').text() );
+          if ((result.$('.messageText').text()).indexOf("&#12456;&#12521;&#12540;:&#12525;&#12464;&#12452;&#12531;&#12395;&#22833;&#25943;&#12375;&#12414;&#12375;&#12383;&#12290;&#12518;&#12540;&#12470;&#21517;&#12392;&#12497;&#12473;&#12527;&#12540;&#12489;&#12364;&#27491;&#12375;&#12356;&#12363;&#12372;&#30906;&#35469;&#12367;&#12384;&#12373;&#12356;&#12290;")  != -1){
+            data = {'result':'ng','reason':'Invalid id or password'}
+          }else{
+              var sid = decodeURI(result['body'].toString().substring(result['body'].search("sid=")+4,result['body'].search("untethered=")-1));
+              console.log(sid);
+              data = {'result':'ok','sid':sid}
+          }
           res.send(data);
         });
         
