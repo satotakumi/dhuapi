@@ -2,9 +2,8 @@ var express = require('express');
 var router = express.Router();
 var url = require('url');
 var client = require('cheerio-httpcli');
-var jsforce = require('jsforce');
 
-  // output response body
+// output response body
 module.exports = {
     login : function (req, res) {
         var url_parts = url.parse(req.url,true);
