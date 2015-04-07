@@ -9,30 +9,38 @@ module.exports = {
     class : function (req, res) {
         var getData = (url.parse(req.url,true)).query;
         if (!req.headers['sid']){
-          res.json({resut: 'ng',reason: 'empty sid'});;
+          console.log('sid is empty');
+          res.json({resut: 'ng',reason: 'empty sid'});
           return
         }
         client.headers['Cookie'] = 'sid='+req.headers['sid'];
         
         client.setBrowser('chrome'); 
-        client.fetch('https://dh.force.com/digitalCampus/CampusDeliveryList?displayType=20')
+        var fetch = client.fetch('https://dh.force.com/digitalCampus/CampusDeliveryList?displayType=20')
         .then(function (result) {
-        res.send(result['body']);
-        return;
-        var rows = result.$("table")[0].rows;
-          $.each(rows, function(i) {
-            var cells = rows[i].cells;
-            // 行を１つずつ取り出す
-            $.each(cells, function() {
-                var td = $(this);
-                $.each(td,function() {
-                  console.log($(this).text());
-                });
+          result.$('td').each(function (idx) {
+            var tdd = result.$(this).text();
+            console.log(tdd);
+            //Date check
+            var date = new Date(tdd);
+            if(tdd == (date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + date.getDate())){
+              //if date
+              
+            }else{
+              
+            }
           });
-         });
-          
           var data = {
-            result:'ok',
+            result:'ok'
+          }
+          res.send(data);
+          
+        }).catch(function (err) {
+          // どこかでエラーが発生
+          console.log(err);
+          var data={
+            result: "ng",
+            reason: "code:" + err['statusCode']
           }
           res.json(data);
         })
