@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var url = require('url');
 var client = require('cheerio-httpcli');
-var util = require('util')
+var utils = require('utils')
 
 //get informations
 
@@ -21,17 +21,39 @@ module.exports = {
         .then(function (result) {
 
           var resd = [];
+          var trd = {};
+          var i = 0;
           result.$('td').each(function (idx) {
-            var tdd = (result.$(this).text());
-            resd.push(util.decNumRefToString(tdd));
+            var tdd = utils.decNumRefToString(result.$(this).text()).replace("\n", '').replace(/\s+/g, "");
             //Date check
             var date = new Date(tdd);
-            if(tdd == (date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + date.getDate())){
+            if(! isNaN( date.getTime() )){
               //if date
-              
+              trd['date'] = date;
+              i = 0;
             }else{
-              
+              switch(i){
+                case 1:
+                  trd['status'] = tdd;
+                case 2:
+                  trd['kind'] = tdd;
+                case 3:
+                  trd['important'] = tdd;
+                case 4:
+                  trd['class_name'] = tdd;
+                case 5:
+                  trd['title'] = tdd;
+                  
+
+              }
             }
+            if (i >= 5){
+              i = 0;
+              resd.push(trd);
+              trd = {};
+              i = 0;
+            }
+            i++;
           });
           var data = {
             result:'ok',
@@ -44,6 +66,7 @@ module.exports = {
           console.log(err);
           var data={
             result: "ng",
+            //debugように code : という文字列を追加してる。エラーをどのように処理するか決めたら変える。
             reason: "code:" + err['statusCode']
           }
           res.json(data);

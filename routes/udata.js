@@ -3,7 +3,6 @@ var router = express.Router();
 var url = require('url');
 var client = require('cheerio-httpcli');
 
-
 module.exports = {
     attendance : function (req, res) {
         var url_parts = url.parse(req.url,true);
