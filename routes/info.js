@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var url = require('url');
 var client = require('cheerio-httpcli');
+var util = require('util')
 
 //get informations
 
@@ -18,9 +19,11 @@ module.exports = {
         client.setBrowser('chrome'); 
         var fetch = client.fetch('https://dh.force.com/digitalCampus/CampusDeliveryList?displayType=20')
         .then(function (result) {
+
+          var resd = [];
           result.$('td').each(function (idx) {
-            var tdd = result.$(this).text();
-            console.log(tdd);
+            var tdd = (result.$(this).text());
+            resd.push(util.decNumRefToString(tdd));
             //Date check
             var date = new Date(tdd);
             if(tdd == (date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + date.getDate())){
@@ -31,7 +34,8 @@ module.exports = {
             }
           });
           var data = {
-            result:'ok'
+            result:'ok',
+            data: resd
           }
           res.send(data);
           
