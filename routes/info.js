@@ -15,20 +15,20 @@ module.exports = {
           return
         }
         client.headers['Cookie'] = 'sid='+req.headers['sid'];
-        
         client.setBrowser('chrome'); 
         var fetch = client.fetch('https://dh.force.com/digitalCampus/CampusDeliveryList?displayType=20')
         .then(function (result) {
-
           var resd = [];
           var trd = {};
           var i = 0;
           result.$('td').each(function (idx) {
             var tdd = utils.decNumRefToString(result.$(this).text()).replace("\n", '').replace(/\s+/g, "");
+            
             //Date check
             var date = new Date(tdd);
             if(! isNaN( date.getTime() )){
               //if date
+              trd['id'] = url.parse(result.$(this).parent().attr('onclick'),true).query['id'];
               trd['date'] = date;
               i = 0;
             }else{
@@ -43,8 +43,6 @@ module.exports = {
                   trd['class_name'] = tdd;
                 case 5:
                   trd['title'] = tdd;
-                  
-
               }
             }
             if (i >= 5){
