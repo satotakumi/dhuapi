@@ -8,15 +8,9 @@ var utils = require('utils')
 
 module.exports = {
     class : function (req, res) {
-        var getData = (url.parse(req.url,true)).query;
-        if (!req.headers['sid']){
-          console.log('sid is empty');
-          res.json({resut: 'ng',reason: 'empty sid'});
-          return
-        }
-        client.headers['Cookie'] = 'sid='+req.headers['sid'];
+        client.headers['cookie'] =  new Buffer(req.headers['api_cookie'], 'base64').toString();
         client.setBrowser('chrome'); 
-        var fetch = client.fetch('https://dh.force.com/digitalCampus/CampusDeliveryList?displayType=20')
+        var fetch = client.fetch('https://dh.force.com/digitalCampus/CampusDeliveryList?displayType=00')
         .then(function (result) {
           var resd = [];
           var trd = {};
@@ -53,21 +47,9 @@ module.exports = {
             }
             i++;
           });
-          var data = {
-            result:'ok',
-            data: resd
-          }
-          res.send(data);
-          
+          res.send({data: resd});
         }).catch(function (err) {
-          // どこかでエラーが発生
-          console.log(err);
-          var data={
-            result: "ng",
-            //debugように code : という文字列を追加してる。エラーをどのように処理するか決めたら変える。
-            reason: "code:" + err['statusCode']
-          }
-          res.json(data);
+          res.json(err['statusCode'], {code: 'dhw_server_error', status_code: err['statusCode']});
         })
     },
 };
