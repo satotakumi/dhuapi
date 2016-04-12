@@ -28,6 +28,7 @@ app.use('/', routes);
 //Login!
 app.get('/login', users.login);
 app.get('/attendance',users.attendance);
+app.get('/info/general',info.general);
 app.get('/info/class',info.class);
 
 // catch 404 and forward to error handler
